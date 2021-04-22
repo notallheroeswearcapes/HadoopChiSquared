@@ -1,0 +1,14 @@
+create directory and put input file to hadoop fs:
+hadoop fs -mkdir /DIR_NAME
+hadoop fs -mkdir /DIR_NAME/INPUT_DIR_NAME
+hadoop fs -put local/fs/path/to/input/file /hadoop/fs/path/to/input/dir
+
+compile with maven (call from project root, files are in target directory):
+mvn clean package
+
+run jar on hadoop (input path needs to exist, output doesn't need to exist):
+hadoop jar JAR_NAME.jar CLASS_NAME /hadoop/fs/to/input /hadoop/fs/path/to/output
+e.g. hadoop jar target/DIC_Ex1_01624856-1.0-shaded.jar ChiSquaredDriver /test/input /test/output_first /test/output_second /test/cachedFiles/stopwords.txt
+
+copy file from hadoop to local fs:
+hadoop fs -copyToLocal /hadoop/fs/path/to/file local/fs/path
