@@ -1,3 +1,6 @@
 .idea
 out
 target
+output_first
+output_second
+output_chisquared

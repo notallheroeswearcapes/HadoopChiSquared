@@ -3,6 +3,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.Map;
 
 
 /**
@@ -24,7 +25,7 @@ public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
      */
     public void reduce(Text key, Iterable<ReviewValue> values, Context context)
             throws IOException, InterruptedException {
-        Hashtable<String, Integer> tokenOccurrences = new Hashtable<>();
+        Map<String, Integer> tokenOccurrences = new Hashtable<>();
         for (ReviewValue val : values) {
             if (tokenOccurrences.containsKey(val.getToken().toString())) {
                 tokenOccurrences.put(val.getToken().toString(), tokenOccurrences.get(val.getToken().toString()) + val.getCount().get());
@@ -32,6 +33,6 @@ public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
                 tokenOccurrences.put(val.getToken().toString(), val.getCount().get());
             }
         }
-        context.write(key, Util.encodeHashtableAsText(tokenOccurrences));
+        context.write(key, Util.encodeMapAsText(tokenOccurrences, Util.CONCAT_DELIMITER, Util.TOKEN_COUNT_DELIMITER));
     }
 }

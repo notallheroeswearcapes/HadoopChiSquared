@@ -13,8 +13,8 @@ public class DocumentTokenReducer extends Reducer<Text, DocumentTokenValue, Text
     public void reduce(Text key, Iterable<DocumentTokenValue> values, Context context)
             throws IOException, InterruptedException {
         int tokenOccurrences = 0;
-        Hashtable<String, Integer> tokenCategoryOccurrences = new Hashtable<>();
-        Hashtable<String, Integer> documentsPerCategory = new Hashtable<>();
+        Map<String, Integer> tokenCategoryOccurrences = new Hashtable<>();
+        Map<String, Integer> documentsPerCategory = new Hashtable<>();
         String category;
 
         // iterate over all values of form: category, count
@@ -39,7 +39,7 @@ public class DocumentTokenReducer extends Reducer<Text, DocumentTokenValue, Text
             emittedValue.set(tokenOccurrences + Util.CONCAT_DELIMITER + // #docs per token
                     entry.getValue() + Util.CONCAT_DELIMITER + // #docs with token per category
                     documentsPerCategory.get(entry.getKey()) + Util.CONCAT_DELIMITER + // #docs per category
-                    context.getConfiguration().getLong(Counter.TOTAL_DOCUMENTS.toString(), 0) //#docs in total
+                    context.getConfiguration().getLong(Util.Counter.TOTAL_DOCUMENTS.toString(), 0) //#docs in total
             );
             context.write(emittedKey, emittedValue);
         }

@@ -1,7 +1,6 @@
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -16,7 +15,7 @@ import org.apache.hadoop.util.ToolRunner;
  * @author Matthias Eder, 01624856
  * @since 16.04.2021
  */
-public class ChiSquaredDriver extends Configured implements Tool {
+public class Driver extends Configured implements Tool {
 
     /**
      * Main function. Calls the run method and passes args.
@@ -24,7 +23,7 @@ public class ChiSquaredDriver extends Configured implements Tool {
      * @param args input and output file paths as a string array
      */
     public static void main(String[] args) throws Exception {
-        int exitCode = ToolRunner.run(new ChiSquaredDriver(), args);
+        int exitCode = ToolRunner.run(new Driver(), args);
         System.exit(exitCode);
     }
 
@@ -36,11 +35,12 @@ public class ChiSquaredDriver extends Configured implements Tool {
      */
     @Override
     public int run(String[] args) throws Exception {
-        if (args.length != 4) {
+        if (args.length != 5) {
             System.err.printf("%s needs exactly four arguments.\n" +
                     "First argument: path to input file\n" +
                     "Second argument: path to output of first job\n" +
                     "Third argument: path to output of second job\n" +
+                    "Fourth argument: path to output of third job\n" +
                     "Fourth argument: path to stopwords file", getClass().getSimpleName());
             return -1;
         }
@@ -48,14 +48,13 @@ public class ChiSquaredDriver extends Configured implements Tool {
         /* JOB 1 */
         Configuration confJob1 = new Configuration();
         Job job1 = Job.getInstance(confJob1, "chi-squared-first");
-        job1.setJarByClass(ChiSquaredDriver.class);
+        job1.setJarByClass(Driver.class);
 
         // add file paths for input and output to the first job based on the args passed
         FileInputFormat.addInputPath(job1, new Path(args[0]));
         FileOutputFormat.setOutputPath(job1, new Path(args[1]));
         job1.setMapOutputKeyClass(Text.class);
         job1.setMapOutputValueClass(ReviewValue.class);
-        job1.setOutputFormatClass(ChiSquaredOutputFormat.class);
         job1.setNumReduceTasks(1);
 
         // set job configurations
@@ -68,11 +67,11 @@ public class ChiSquaredDriver extends Configured implements Tool {
         job1.setReducerClass(ReviewReducer.class);
 
         // set distributed file cache for additional files passed to hdfs (e.g. stopwords.txt)
-        job1.addCacheFile(new Path(args[3]).toUri());
+        job1.addCacheFile(new Path(args[4]).toUri());
 
         // wait for the job2 to complete and print whether the job2 was successful
         int returnValue = job1.waitForCompletion(true) ? 0 : 1;
-        long total_documents = job1.getCounters().findCounter(Counter.TOTAL_DOCUMENTS).getValue();
+        long total_documents = job1.getCounters().findCounter(Util.Counter.TOTAL_DOCUMENTS).getValue();
         if (job1.isSuccessful()) {
             System.out.println("Job " + job1.getJobName() + " completed successfully.");
         } else {
@@ -83,33 +82,62 @@ public class ChiSquaredDriver extends Configured implements Tool {
        /* JOB 2 */
        Configuration confJob2 = new Configuration();
        Job job2 = Job.getInstance(confJob2, "chi-squared-second");
-       job2.setJarByClass(ChiSquaredDriver.class);
+       job2.setJarByClass(Driver.class);
 
-       // add file paths for input and output to the job2 based on the args passed
+       // add file paths for input and output to the job based on the args passed
        FileInputFormat.addInputPath(job2, new Path(args[1]));
        FileOutputFormat.setOutputPath(job2, new Path(args[2]));
        job2.setMapOutputKeyClass(Text.class);
        job2.setMapOutputValueClass(DocumentTokenValue.class);
-       job2.setOutputFormatClass(ChiSquaredOutputFormat.class);
        job2.setNumReduceTasks(1);
 
-       // set job2 configurations
+       // set job configurations
        job2.getConfiguration().set("mapreduce.output.basename", "chi-squared-second");
        job2.getConfiguration().set("mapreduce.output.textoutputformat.recordseparator", "\n");
        job2.getConfiguration().set("mapreduce.output.textoutputformat.separator", "\t");
-       job2.getConfiguration().setLong(Counter.TOTAL_DOCUMENTS.toString(), total_documents);
+       job2.getConfiguration().setLong(Util.Counter.TOTAL_DOCUMENTS.toString(), total_documents);
 
-       // add Map and Reduce classes to the job2
+       // add Map and Reduce classes to the job
        job2.setMapperClass(DocumentTokenMapper.class);
        job2.setReducerClass(DocumentTokenReducer.class);
 
-       // wait for the job2 to complete and print whether the job2 was successful
+       // wait for the job to complete and print whether the job was successful
        returnValue = job2.waitForCompletion(true) ? 0 : 1;
        if (job2.isSuccessful()) {
            System.out.println("Job " + job2.getJobName() + " completed successfully.");
        } else {
            System.out.println("Job " + job2.getJobName() + " failed.");
+           return returnValue;
        }
-       return returnValue;
+
+        /* JOB 3 */
+        Configuration confJob3 = new Configuration();
+        Job job3 = Job.getInstance(confJob3, "chi-squared-third");
+        job3.setJarByClass(Driver.class);
+
+        // add file paths for input and output to the job based on the args passed
+        FileInputFormat.addInputPath(job3, new Path(args[2]));
+        FileOutputFormat.setOutputPath(job3, new Path(args[3]));
+        job3.setMapOutputKeyClass(Text.class);
+        job3.setMapOutputValueClass(ChiSquaredValue.class);
+        job3.setNumReduceTasks(1);
+
+        // set job configurations
+        job3.getConfiguration().set("mapreduce.output.basename", "chi-squared-third");
+        job3.getConfiguration().set("mapreduce.output.textoutputformat.recordseparator", "\n");
+        job3.getConfiguration().set("mapreduce.output.textoutputformat.separator", " ");
+
+        // add Map and Reduce classes to the job
+        job3.setMapperClass(ChiSquaredMapper.class);
+        job3.setReducerClass(ChiSquaredReducer.class);
+
+        // wait for the job to complete and print whether the job was successful
+        returnValue = job3.waitForCompletion(true) ? 0 : 1;
+        if (job3.isSuccessful()) {
+            System.out.println("Job " + job3.getJobName() + " completed successfully.");
+        } else {
+            System.out.println("Job " + job3.getJobName() + " failed.");
+        }
+        return returnValue;
     }
 }

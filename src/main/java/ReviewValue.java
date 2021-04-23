@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ReviewValue implements WritableComparable<ReviewValue> {
 
@@ -65,28 +66,25 @@ public class ReviewValue implements WritableComparable<ReviewValue> {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        ReviewValue r = (ReviewValue) obj;
-        return r.token.toString().equals(this.token.toString()) && r.count.get() == this.count.get();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReviewValue that = (ReviewValue) o;
+        return token.equals(that.token) && count.equals(that.count);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + token.hashCode();
-        result = prime * result + count.hashCode();
-        return result;
+        return Objects.hash(token, count);
     }
 
     @Override
     public int compareTo(@NotNull ReviewValue o) {
-        int k = this.token.compareTo(o.token);
-        if (k != 0) {
-            return k;
-        } else {
-            return this.count.compareTo(o.count);
+        int cmp = token.compareTo(o.token);
+        if (cmp != 0) {
+            return cmp;
         }
+        return count.get() - o.count.get();
     }
 
 }

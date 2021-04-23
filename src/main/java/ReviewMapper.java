@@ -91,7 +91,7 @@ public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
         }
 
         // increment counter for total documents
-        context.getCounter(Counter.TOTAL_DOCUMENTS).increment(1);
+        context.getCounter(Util.Counter.TOTAL_DOCUMENTS).increment(1);
     }
 
     /**

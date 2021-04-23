@@ -8,11 +8,10 @@ public class DocumentTokenMapper extends Mapper<Object, Text, Text, DocumentToke
 
     private final Text emittedKey = new Text();
     private final DocumentTokenValue emittedValue = new DocumentTokenValue();
-    private final static String DELIMITER_VALUE = "\t";
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
-        String[] valueEntry = value.toString().split(DELIMITER_VALUE);
+        String[] valueEntry = value.toString().split(Util.KEY_VALUE_DELIMITER);
         emittedValue.setCategory(valueEntry[0]); // set category as part of the value
         String[] reviewValues = valueEntry[1].split(Util.CONCAT_DELIMITER);
 

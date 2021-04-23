@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Objects;
 
 public class DocumentTokenValue implements WritableComparable<DocumentTokenValue> {
 
@@ -14,7 +15,7 @@ public class DocumentTokenValue implements WritableComparable<DocumentTokenValue
 
     public DocumentTokenValue() {
         category = new Text();
-        count = new IntWritable(0);
+        count = new IntWritable();
     }
 
     public DocumentTokenValue(Text category, IntWritable count) {
@@ -52,27 +53,25 @@ public class DocumentTokenValue implements WritableComparable<DocumentTokenValue
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + category.hashCode();
-        result = prime * result + count.hashCode();
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentTokenValue that = (DocumentTokenValue) o;
+        return category.equals(that.category) && count.equals(that.count);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+    public int hashCode() {
+        return Objects.hash(category, count);
     }
 
     @Override
     public int compareTo(@NotNull DocumentTokenValue o) {
-        int k = this.category.compareTo(o.category);
-        if (k != 0) {
-            return k;
-        } else {
-            return this.count.compareTo(o.count);
+        int cmp = category.compareTo(o.category);
+        if (cmp != 0) {
+            return cmp;
         }
+        return count.get() - o.count.get();
     }
 
     @Override
