@@ -8,30 +8,33 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * TODO
+ */
 public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
 
     private Text token;
-    private IntWritable docsPerToken;
     private IntWritable docsPerTokenAndCategory;
+    private IntWritable docsPerToken;
     private IntWritable docsPerCategory;
     private IntWritable docsTotal;
 
     public ChiSquaredValue() {
         token = new Text();
-        docsPerToken = new IntWritable();
         docsPerTokenAndCategory = new IntWritable();
+        docsPerToken = new IntWritable();
         docsPerCategory = new IntWritable();
         docsTotal = new IntWritable();
     }
 
     public ChiSquaredValue(Text token,
-                           IntWritable docsPerToken,
                            IntWritable docsPerTokenAndCategory,
+                           IntWritable docsPerToken,
                            IntWritable docsPerCategory,
                            IntWritable docsTotal) {
         this.token = token;
-        this.docsPerToken = docsPerToken;
         this.docsPerTokenAndCategory = docsPerTokenAndCategory;
+        this.docsPerToken = docsPerToken;
         this.docsPerCategory = docsPerCategory;
         this.docsTotal = docsTotal;
     }
@@ -42,15 +45,15 @@ public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
         if (o == null || getClass() != o.getClass()) return false;
         ChiSquaredValue that = (ChiSquaredValue) o;
         return token.equals(that.token)
-                && docsPerToken.equals(that.docsPerToken)
                 && docsPerTokenAndCategory.equals(that.docsPerTokenAndCategory)
+                && docsPerToken.equals(that.docsPerToken)
                 && docsPerCategory.equals(that.docsPerCategory)
                 && docsTotal.equals(that.docsTotal);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, docsPerToken, docsPerTokenAndCategory, docsPerCategory, docsTotal);
+        return Objects.hash(token, docsPerTokenAndCategory, docsPerToken, docsPerCategory, docsTotal);
     }
 
     @Override
@@ -59,11 +62,11 @@ public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
         if (cmp != 0) {
             return cmp;
         }
-        cmp = docsPerToken.get() - o.docsPerToken.get();
+        cmp = docsPerTokenAndCategory.get() - o.docsPerTokenAndCategory.get();
         if (cmp != 0) {
             return cmp;
         }
-        cmp = docsPerTokenAndCategory.get() - o.docsPerTokenAndCategory.get();
+        cmp = docsPerToken.get() - o.docsPerToken.get();
         if (cmp != 0) {
             return cmp;
         }
@@ -77,8 +80,8 @@ public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
     @Override
     public void write(DataOutput dataOutput) throws IOException {
         token.write(dataOutput);
-        docsPerToken.write(dataOutput);
         docsPerTokenAndCategory.write(dataOutput);
+        docsPerToken.write(dataOutput);
         docsPerCategory.write(dataOutput);
         docsTotal.write(dataOutput);
     }
@@ -86,8 +89,8 @@ public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
     @Override
     public void readFields(DataInput dataInput) throws IOException {
         token.readFields(dataInput);
-        docsPerToken.readFields(dataInput);
         docsPerTokenAndCategory.readFields(dataInput);
+        docsPerToken.readFields(dataInput);
         docsPerCategory.readFields(dataInput);
         docsTotal.readFields(dataInput);
     }

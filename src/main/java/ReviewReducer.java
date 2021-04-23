@@ -7,7 +7,7 @@ import java.util.Map;
 
 
 /**
- * Reducer class for first round. Sums key-value pairs.
+ * Reducer class for first class. TODO
  *
  * @author Matthias Eder, 01624856
  * @since 16.04.2021
@@ -15,7 +15,7 @@ import java.util.Map;
 public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
 
     /**
-     * Performs the reduce operations and sums the occurrences of key-value pairs.
+     * Reducer function of first job.
      *
      * @param key     the given key of the key-value pair
      * @param values  the given value of the key-value pair
@@ -23,6 +23,7 @@ public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
      * @throws IOException          thrown in case writing to the context fails
      * @throws InterruptedException thrown in case writing to the context fails
      */
+    @Override
     public void reduce(Text key, Iterable<ReviewValue> values, Context context)
             throws IOException, InterruptedException {
         Map<String, Integer> tokenOccurrences = new Hashtable<>();

@@ -8,7 +8,7 @@ mvn clean package
 
 run jar on hadoop (input path needs to exist, output doesn't need to exist):
 hadoop jar JAR_NAME.jar CLASS_NAME /hadoop/fs/to/input /hadoop/fs/path/to/output
-e.g. hadoop jar target/DIC_Ex1_01624856-1.0-shaded.jar Driver /test/input /test/output_first /test/output_second /test/cachedFiles/stopwords.txt
+e.g. hadoop jar target/DIC_Ex1_01624856-1.0-shaded.jar Driver /chi_squared_01624856/input /chi_squared_01624856/out_first /chi_squared_01624856/out_second /chi_squared_01624856/output /chi_squared_01624856/cachedFiles/stopwords.txt
 
 copy file from hadoop to local fs:
 hadoop fs -copyToLocal /hadoop/fs/path/to/file local/fs/path

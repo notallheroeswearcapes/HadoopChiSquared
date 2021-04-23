@@ -5,16 +5,30 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Reducer class for the third job.
+ *
+ * @author Matthias Eder, 01624856
+ * @since 18.04.2021
+ */
 public class ChiSquaredReducer extends Reducer<Text, ChiSquaredValue, Text, Text> {
 
     private final Text emittedKey = new Text();
     private final Text emittedValue = new Text();
 
+    /**
+     *
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     protected void reduce(Text key, Iterable<ChiSquaredValue> values, Context context)
             throws IOException, InterruptedException {
 
-        int N, A, B, C, D;
+        long N, A, B, C, D;
         double chiSquared;
         Map<String, Double> chiSquaredValues = new LinkedHashMap<>();
 
@@ -23,8 +37,8 @@ public class ChiSquaredReducer extends Reducer<Text, ChiSquaredValue, Text, Text
 
         for (ChiSquaredValue val : values) {
             N = val.getDocsTotal().get();
-            A = val.getDocsPerToken().get();
-            B = val.getDocsPerTokenAndCategory().get() - A;
+            A = val.getDocsPerTokenAndCategory().get();
+            B = val.getDocsPerToken().get() - A;
             C = val.getDocsPerCategory().get() - A;
             D = N - (A + B + C);
             chiSquared = Util.calculateChiSquared(A, B, C, D, N);

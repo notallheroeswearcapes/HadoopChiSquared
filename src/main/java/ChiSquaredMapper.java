@@ -3,11 +3,26 @@ import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 
+/**
+ * Mapper class for the third job.
+ *
+ * @author Matthias Eder, 01624856
+ * @since 18.04.2021
+ */
 public class ChiSquaredMapper extends Mapper<Object, Text, Text, ChiSquaredValue> {
 
     private final Text emittedKey = new Text();
     private final ChiSquaredValue emittedValue = new ChiSquaredValue();
 
+    /**
+     * TODO
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
         String[] valueEntry = value.toString().split(Util.KEY_VALUE_DELIMITER);
@@ -25,8 +40,8 @@ public class ChiSquaredMapper extends Mapper<Object, Text, Text, ChiSquaredValue
             throw new InterruptedException("Not enough values.");
         }
         emittedValue.setToken(token);
-        emittedValue.setDocsPerToken(valuePart[0]);
-        emittedValue.setDocsPerTokenAndCategory(valuePart[1]);
+        emittedValue.setDocsPerTokenAndCategory(valuePart[0]);
+        emittedValue.setDocsPerToken(valuePart[1]);
         emittedValue.setDocsPerCategory(valuePart[2]);
         emittedValue.setDocsTotal(valuePart[3]);
 

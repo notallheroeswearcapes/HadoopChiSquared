@@ -1,6 +1,5 @@
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Mapper class. Gets a body of text, splits and filters the text and creates tokens that are to be reduced.
+ * Mapper class for the first job. Gets a body of text, splits and filters the text. Maps the input for the
+ * ReviewReducer.
  *
  * @author Matthias Eder, 01624856
  * @since 15.04.2021
@@ -29,9 +29,9 @@ public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
             "\\s|\\d|\\.|!|\\?|,|;|:|\\(|\\)|\\[|]|\\{|}|-|_|\"|'|`|~|#|&|\\*|%|\\$|/|\\\\";
 
     /**
-     * Setup for the mapper. Basically just reads the cached files.
+     * Setup for the mapper. Reads the cached files.
      *
-     * @param context the given Context.
+     * @param context the Context.
      */
     @Override
     protected void setup(Context context) {
@@ -41,7 +41,6 @@ public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
                 for (URI uri : cacheFiles) {
                     readFile(uri, context);
                 }
-                System.out.println("" + stopWords.size() + " stopwords set.");
             }
         } catch (IOException ex) {
             System.err.println("Exception encountered while setting up the mapper: " + ex.getMessage());
@@ -49,14 +48,18 @@ public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
     }
 
     /**
-     * Map function. Delimits and filters the text.
+     * Map function of first job. Pre-processes the input.
+     * Emits:   category, (NUM_DOCS, #docsPerCategory)
+     * Emits:   category, (token, #docsWithTokenPerCategory)
+     * Increments counter for total number of documents read.
      *
-     * @param key     the given key of the key-value pair
-     * @param value   the given value of the key-value pair
-     * @param context the given Context
+     * @param key     the key of the key-value pair
+     * @param value   the value of the key-value pair: one JSON line of the input file
+     * @param context the Context
      * @throws IOException          thrown in case writing to the context fails
      * @throws InterruptedException thrown in case writing to the context fails
      */
+    @Override
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         // read in json input file
         final JSONObject obj = new JSONObject(value.toString());
@@ -101,7 +104,6 @@ public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
      */
     private void readFile(@NotNull URI fileUri, Context context) {
         try {
-            System.out.println("Path of stopwords file: " + fileUri);
             FileSystem fs = FileSystem.get(context.getConfiguration());
             Path path = new Path(fileUri.toString());
             BufferedReader reader = new BufferedReader(new InputStreamReader(fs.open(path)));

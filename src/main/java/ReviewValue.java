@@ -8,6 +8,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ *
+ */
 public class ReviewValue implements WritableComparable<ReviewValue> {
 
     private Text token;
