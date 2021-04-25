@@ -11,7 +11,7 @@ import java.util.Map;
  * @author Matthias Eder, 01624856
  * @since 18.04.2021
  */
-public class DocumentTokenReducer extends Reducer<Text, DocumentTokenValue, Text, Text> {
+public class DocumentTokenReducer extends Reducer<Text, TextIntWritable, Text, Text> {
 
     private final Text emittedKey = new Text();
     private final Text emittedValue = new Text();
@@ -25,7 +25,7 @@ public class DocumentTokenReducer extends Reducer<Text, DocumentTokenValue, Text
      * @throws InterruptedException
      */
     @Override
-    public void reduce(Text key, Iterable<DocumentTokenValue> values, Context context)
+    public void reduce(Text key, Iterable<TextIntWritable> values, Context context)
             throws IOException, InterruptedException {
         int tokenOccurrences = 0;
         Map<String, Integer> tokenCategoryOccurrences = new Hashtable<>();
@@ -36,13 +36,13 @@ public class DocumentTokenReducer extends Reducer<Text, DocumentTokenValue, Text
         // save token occurrences per category in tokenCategoryOccurrences
         // save number of documents per category in documentsPerCategory
         // count total token occurrences in tokenOccurrences
-        for (DocumentTokenValue val : values) {
-            if (val.getCategory().toString().contains(Util.DOCUMENTS_PER_CATEGORY)) {
-                category = val.getCategory().toString().split(Util.CONCAT_DELIMITER)[0];
+        for (TextIntWritable val : values) {
+            if (val.getText().toString().contains(Util.DOCUMENTS_PER_CATEGORY)) {
+                category = val.getText().toString().split(Util.CONCAT_DELIMITER)[0];
                 documentsPerCategory.put(category, val.getCount().get());
                 continue;
             }
-            tokenCategoryOccurrences.put(val.getCategory().toString(), val.getCount().get());
+            tokenCategoryOccurrences.put(val.getText().toString(), val.getCount().get());
             tokenOccurrences += val.getCount().get();
         }
 

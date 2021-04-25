@@ -20,10 +20,10 @@ import java.util.Set;
  * @author Matthias Eder, 01624856
  * @since 15.04.2021
  */
-public class ReviewMapper extends Mapper<Object, Text, Text, ReviewValue> {
+public class ReviewMapper extends Mapper<Object, Text, Text, TextIntWritable> {
 
     private final Text emittedKey = new Text();
-    private final ReviewValue emittedValue = new ReviewValue();
+    private final TextIntWritable emittedValue = new TextIntWritable();
     private final Set<String> stopWords = new HashSet<>();
     private final static String DELIMITERS =
             "\\s|\\d|\\.|!|\\?|,|;|:|\\(|\\)|\\[|]|\\{|}|-|_|\"|'|`|~|#|&|\\*|%|\\$|/|\\\\";

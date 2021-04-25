@@ -28,7 +28,7 @@ public class ChiSquaredReducer extends Reducer<Text, ChiSquaredValue, Text, Text
     protected void reduce(Text key, Iterable<ChiSquaredValue> values, Context context)
             throws IOException, InterruptedException {
 
-        long N, A, B, C, D;
+        double N, A, B, C, D;
         double chiSquared;
         Map<String, Double> chiSquaredValues = new LinkedHashMap<>();
 
@@ -54,7 +54,7 @@ public class ChiSquaredReducer extends Reducer<Text, ChiSquaredValue, Text, Text
                                 Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new
                         ));
 
-        emittedValue.set(Util.encodeMapAsText(sortedChiSquared, " ", Util.TOKEN_COUNT_DELIMITER));
+        emittedValue.set(Util.encodeMapAsText(sortedChiSquared, Util.SPACE_DELIMITER, Util.TOKEN_COUNT_DELIMITER));
         context.write(emittedKey, emittedValue);
     }
 }

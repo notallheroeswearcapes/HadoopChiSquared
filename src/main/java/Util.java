@@ -13,6 +13,7 @@ public class Util {
     public static final String CONCAT_DELIMITER = ",";
     public static final String KEY_VALUE_DELIMITER = "\t";
     public static final String TOKEN_COUNT_DELIMITER = ":";
+    public static final String SPACE_DELIMITER = " ";
     public static final String DOCUMENTS_PER_CATEGORY = "NUM_DOCS";
     public static final long MAX_ENTRIES = 150;
 
@@ -23,11 +24,11 @@ public class Util {
     /**
      * Helper function to encode a map of generic types as a Text.
      *
-     * @param map the map to be encoded
+     * @param map            the map to be encoded
      * @param entryDelimiter the delimiter between entries
-     * @param pairDelimiter the delimiter between one pair (one entry)
-     * @param <K> generic type of the map key
-     * @param <V> generic type of the map value
+     * @param pairDelimiter  the delimiter between one pair (one entry)
+     * @param <K>            generic type of the map key
+     * @param <V>            generic type of the map value
      * @return the encoded map as a Text
      */
     public static <K, V> Text encodeMapAsText(Map<K, V> map, String entryDelimiter, String pairDelimiter) {
@@ -35,7 +36,22 @@ public class Util {
         for (Map.Entry<K, V> entry : map.entrySet()) {
             String key = entry.getKey().toString();
             String val = entry.getValue().toString();
-            sj.add(String.join(pairDelimiter, key,val));
+            sj.add(String.join(pairDelimiter, key, val));
+        }
+        return new Text(sj.toString());
+    }
+
+    /**
+     * Helper function to encode a set of strings as a Text.
+     *
+     * @param set            the set to be encoded
+     * @param entryDelimiter the delimiter between entries
+     * @return the encoded map as a Text
+     */
+    public static Text encodeSetAsText(Set<String> set, String entryDelimiter) {
+        StringJoiner sj = new StringJoiner(entryDelimiter);
+        for (String entry : set) {
+            sj.add(entry);
         }
         return new Text(sj.toString());
     }
@@ -50,7 +66,7 @@ public class Util {
      * @param N total number of documents
      * @return the calculated chi-squared value
      */
-    public static double calculateChiSquared(long A, long B, long C, long D, long N) {
+    public static double calculateChiSquared(double A, double B, double C, double D, double N) {
         double numerator = N * Math.pow(((A * D) - (B * C)), 2);
         double res = (A + B) * (A + C) * (B + D) * (C + D);
         return numerator / res;

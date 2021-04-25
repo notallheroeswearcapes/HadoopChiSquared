@@ -1,6 +1,7 @@
 .idea
 out
 target
-output_first
-output_second
-output_chisquared
+out_first
+out_second
+out_chi_squared
+out_dict

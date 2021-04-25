@@ -9,7 +9,12 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * TODO
+ * Custom WritableComparable for the calculation of the chi squared values. Contains the number of documents per token
+ * and category, the number of documents per token, the number of documents per category and the total number of
+ * documents for one category-token combination.
+ *
+ * @author Matthias Eder, 01624856
+ * @since 23.04.2021
  */
 public class ChiSquaredValue implements WritableComparable<ChiSquaredValue> {
 

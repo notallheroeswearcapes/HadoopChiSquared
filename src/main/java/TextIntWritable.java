@@ -8,36 +8,47 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Objects;
 
-public class DocumentTokenValue implements WritableComparable<DocumentTokenValue> {
+/**
+ * Custom WritableComparable with two fields: one for a Text and one for an IntWritable.
+ *
+ * @author Matthias Eder, 01624856
+ * @since 18.04.2021
+ */
+public class TextIntWritable implements WritableComparable<TextIntWritable> {
 
-    private Text category;
+    private Text text;
     private IntWritable count;
 
-    public DocumentTokenValue() {
-        category = new Text();
+    public TextIntWritable() {
+        text = new Text();
         count = new IntWritable();
     }
 
-    public DocumentTokenValue(Text category, IntWritable count) {
-        this.category = category;
+    public TextIntWritable(Text text, IntWritable count) {
+        this.text = text;
         this.count = count;
     }
 
-    public DocumentTokenValue(String category, int count) {
-        this.category = new Text(category);
+    public TextIntWritable(String text, int count) {
+        this.text = new Text(text);
         this.count = new IntWritable(count);
     }
 
-    public Text getCategory() {
-        return category;
+    public void set(String text, int count) {
+        this.text = new Text(text);
+        this.count = new IntWritable(count);
     }
 
-    public void setCategory(Text category) {
-        this.category = category;
+    public Text getText() {
+        return text;
     }
 
-    public void setCategory(String category) {
-        this.category = new Text(category);
+    public void setText(Text text) {
+        this.text = text;
+    }
+
+    public void setText(String text) {
+        this.text = new Text(text);
     }
 
     public IntWritable getCount() {
@@ -56,18 +67,18 @@ public class DocumentTokenValue implements WritableComparable<DocumentTokenValue
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DocumentTokenValue that = (DocumentTokenValue) o;
-        return category.equals(that.category) && count.equals(that.count);
+        TextIntWritable that = (TextIntWritable) o;
+        return text.equals(that.text) && count.equals(that.count);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(category, count);
+        return Objects.hash(text, count);
     }
 
     @Override
-    public int compareTo(@NotNull DocumentTokenValue o) {
-        int cmp = category.compareTo(o.category);
+    public int compareTo(@NotNull TextIntWritable o) {
+        int cmp = text.compareTo(o.text);
         if (cmp != 0) {
             return cmp;
         }
@@ -76,13 +87,13 @@ public class DocumentTokenValue implements WritableComparable<DocumentTokenValue
 
     @Override
     public void write(DataOutput dataOutput) throws IOException {
-        category.write(dataOutput);
+        text.write(dataOutput);
         count.write(dataOutput);
     }
 
     @Override
     public void readFields(DataInput dataInput) throws IOException {
-        category.readFields(dataInput);
+        text.readFields(dataInput);
         count.readFields(dataInput);
     }
 }

@@ -10,10 +10,10 @@ import java.util.ArrayList;
  * @author Matthias Eder, 01624856
  * @since 18.04.2021
  */
-public class DocumentTokenMapper extends Mapper<Object, Text, Text, DocumentTokenValue> {
+public class DocumentTokenMapper extends Mapper<Object, Text, Text, TextIntWritable> {
 
     private final Text emittedKey = new Text();
-    private final DocumentTokenValue emittedValue = new DocumentTokenValue();
+    private final TextIntWritable emittedValue = new TextIntWritable();
 
     /**
      * Map function of the second job.
@@ -28,7 +28,7 @@ public class DocumentTokenMapper extends Mapper<Object, Text, Text, DocumentToke
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
 
         String[] valueEntry = value.toString().split(Util.KEY_VALUE_DELIMITER);
-        emittedValue.setCategory(valueEntry[0]); // set category as part of the value
+        emittedValue.setText(valueEntry[0]); // set category as part of the value
         String[] reviewValues = valueEntry[1].split(Util.CONCAT_DELIMITER);
 
         String[] pair;
@@ -48,7 +48,7 @@ public class DocumentTokenMapper extends Mapper<Object, Text, Text, DocumentToke
             context.write(emittedKey, emittedValue);
         }
 
-        emittedValue.setCategory(valueEntry[0] + Util.CONCAT_DELIMITER + Util.DOCUMENTS_PER_CATEGORY);
+        emittedValue.setText(valueEntry[0] + Util.CONCAT_DELIMITER + Util.DOCUMENTS_PER_CATEGORY);
         emittedValue.setCount(numDocs);
         for (String t : tokenList) {
             emittedKey.set(t);

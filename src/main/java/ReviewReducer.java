@@ -12,7 +12,7 @@ import java.util.Map;
  * @author Matthias Eder, 01624856
  * @since 16.04.2021
  */
-public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
+public class ReviewReducer extends Reducer<Text, TextIntWritable, Text, Text> {
 
     /**
      * Reducer function of first job.
@@ -24,14 +24,16 @@ public class ReviewReducer extends Reducer<Text, ReviewValue, Text, Text> {
      * @throws InterruptedException thrown in case writing to the context fails
      */
     @Override
-    public void reduce(Text key, Iterable<ReviewValue> values, Context context)
+    public void reduce(Text key, Iterable<TextIntWritable> values, Context context)
             throws IOException, InterruptedException {
         Map<String, Integer> tokenOccurrences = new Hashtable<>();
-        for (ReviewValue val : values) {
-            if (tokenOccurrences.containsKey(val.getToken().toString())) {
-                tokenOccurrences.put(val.getToken().toString(), tokenOccurrences.get(val.getToken().toString()) + val.getCount().get());
+        String token;
+        for (TextIntWritable val : values) {
+            token = val.getText().toString();
+            if (tokenOccurrences.containsKey(token)) {
+                tokenOccurrences.put(token, tokenOccurrences.get(token) + val.getCount().get());
             } else {
-                tokenOccurrences.put(val.getToken().toString(), val.getCount().get());
+                tokenOccurrences.put(token, val.getCount().get());
             }
         }
         context.write(key, Util.encodeMapAsText(tokenOccurrences, Util.CONCAT_DELIMITER, Util.TOKEN_COUNT_DELIMITER));
