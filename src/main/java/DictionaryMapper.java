@@ -5,7 +5,8 @@ import org.apache.hadoop.mapreduce.Mapper;
 import java.io.IOException;
 
 /**
- * Mapper class of the fourth and last job.
+ * Mapper class of the fourth and last job. Extracts the tokens from the chi squared result file. Maps input for the
+ * DictionaryReducer.
  *
  * @author Matthias Eder, 01624856
  * @since 25.04.2021

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.TreeSet;
 
 /**
- * Reducer class of the fourth and last job.
+ * Reducer class of the fourth and last job. Outputs an alphabetically sorted list of all occurring tokens.
  *
  * @author Matthias Eder, 01624856
  * @since 25.04.2021

@@ -48,7 +48,8 @@ public class ReviewMapper extends Mapper<Object, Text, Text, TextIntWritable> {
     }
 
     /**
-     * Map function of first job. Pre-processes the input.
+     * Map function of the first job. Pre-processes the input. Aggregates the number of documents with a token per
+     * category, the number of documents per category and the total number of documents.
      * Emits:   category, (NUM_DOCS, #docsPerCategory)
      * Emits:   category, (token, #docsWithTokenPerCategory)
      * Increments counter for total number of documents read.
@@ -61,7 +62,7 @@ public class ReviewMapper extends Mapper<Object, Text, Text, TextIntWritable> {
      */
     @Override
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-        // read in json input file
+        // read in JSON input file
         final JSONObject obj = new JSONObject(value.toString());
         String reviewText = obj.getString("reviewText");
         String category = obj.getString("category");

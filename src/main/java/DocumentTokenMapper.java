@@ -5,7 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Mapper class for the second job. Maps the input for the DocumentTokenReducer.
+ * Mapper class for the second job. Gets all tokens of a category and their value for the number of documents with the
+ * token per category. Counts total occurrences of a token. Maps the input for the DocumentTokenReducer.
  *
  * @author Matthias Eder, 01624856
  * @since 18.04.2021
@@ -16,8 +17,10 @@ public class DocumentTokenMapper extends Mapper<Object, Text, Text, TextIntWrita
     private final TextIntWritable emittedValue = new TextIntWritable();
 
     /**
-     * Map function of the second job.
-     * Emits: TODO
+     * Map function of the second job. Counts the number of occurrences of a token. Also emits a second time for each
+     * token of a category to get the number of documents per category.
+     * Emits:   token, (category, #docsPerToken)
+     * Emits:   token, (category,NUM_DOCS, #docsPerCategory)
      *
      * @param key     the key of the key-value pair
      * @param value   the value of the key key-value pair: one line of output of the first job
