@@ -37,13 +37,21 @@ public class Driver extends Configured implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         if (args.length != 6) {
-            System.err.printf("%s needs exactly four arguments.\n" +
-                    "First argument: path to input file\n" +
-                    "Second argument: path to output of first job\n" +
-                    "Third argument: path to output of second job\n" +
-                    "Fourth argument: path to output of third job\n" +
-                    "Fifth argument: path to output of fourth job\n" +
-                    "Sixth argument: path to stopwords file", getClass().getSimpleName());
+            System.err.printf("%s needs exactly six arguments but received %d.\n" +
+                            "1st: path to input file - was: %s\n" +
+                            "2nd: path to output of first job - was: %s\n" +
+                            "3rd: path to output of second job - was: %s\n" +
+                            "4th: path to output of third job - was: %s\n" +
+                            "5th: path to output of fourth job - was: %s\n" +
+                            "6th: path to stopwords file - was: %s\n",
+                    getClass().getSimpleName(),
+                    args.length,
+                    args[0],
+                    args[1],
+                    args[2],
+                    args[3],
+                    args[4],
+                    args[5]);
             return -1;
         }
 
@@ -81,36 +89,36 @@ public class Driver extends Configured implements Tool {
             return returnValue;
         }
 
-       /* JOB 2 */
-       Configuration confJob2 = new Configuration();
-       Job job2 = Job.getInstance(confJob2, "chi-squared-second");
-       job2.setJarByClass(Driver.class);
+        /* JOB 2 */
+        Configuration confJob2 = new Configuration();
+        Job job2 = Job.getInstance(confJob2, "chi-squared-second");
+        job2.setJarByClass(Driver.class);
 
-       // add file paths for input and output to the job based on the args passed
-       FileInputFormat.addInputPath(job2, new Path(args[1]));
-       FileOutputFormat.setOutputPath(job2, new Path(args[2]));
-       job2.setMapOutputKeyClass(Text.class);
-       job2.setMapOutputValueClass(TextIntWritable.class);
-       job2.setNumReduceTasks(1);
+        // add file paths for input and output to the job based on the args passed
+        FileInputFormat.addInputPath(job2, new Path(args[1]));
+        FileOutputFormat.setOutputPath(job2, new Path(args[2]));
+        job2.setMapOutputKeyClass(Text.class);
+        job2.setMapOutputValueClass(TextIntWritable.class);
+        job2.setNumReduceTasks(1);
 
-       // set job configurations
-       job2.getConfiguration().set("mapreduce.output.basename", "chi-squared-second");
-       job2.getConfiguration().set("mapreduce.output.textoutputformat.recordseparator", "\n");
-       job2.getConfiguration().set("mapreduce.output.textoutputformat.separator", "\t");
-       job2.getConfiguration().setLong(Util.Counter.TOTAL_DOCUMENTS.toString(), total_documents);
+        // set job configurations
+        job2.getConfiguration().set("mapreduce.output.basename", "chi-squared-second");
+        job2.getConfiguration().set("mapreduce.output.textoutputformat.recordseparator", "\n");
+        job2.getConfiguration().set("mapreduce.output.textoutputformat.separator", "\t");
+        job2.getConfiguration().setLong(Util.Counter.TOTAL_DOCUMENTS.toString(), total_documents);
 
-       // add Map and Reduce classes to the job
-       job2.setMapperClass(DocumentTokenMapper.class);
-       job2.setReducerClass(DocumentTokenReducer.class);
+        // add Map and Reduce classes to the job
+        job2.setMapperClass(DocumentTokenMapper.class);
+        job2.setReducerClass(DocumentTokenReducer.class);
 
-       // wait for the job to complete and print whether the job was successful
-       returnValue = job2.waitForCompletion(true) ? 0 : 1;
-       if (job2.isSuccessful()) {
-           System.out.println("Job " + job2.getJobName() + " completed successfully.");
-       } else {
-           System.out.println("Job " + job2.getJobName() + " failed.");
-           return returnValue;
-       }
+        // wait for the job to complete and print whether the job was successful
+        returnValue = job2.waitForCompletion(true) ? 0 : 1;
+        if (job2.isSuccessful()) {
+            System.out.println("Job " + job2.getJobName() + " completed successfully.");
+        } else {
+            System.out.println("Job " + job2.getJobName() + " failed.");
+            return returnValue;
+        }
 
         /* JOB 3 */
         Configuration confJob3 = new Configuration();
