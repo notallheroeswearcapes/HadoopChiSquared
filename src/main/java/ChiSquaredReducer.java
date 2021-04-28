@@ -19,7 +19,7 @@ public class ChiSquaredReducer extends Reducer<Text, ChiSquaredValue, Text, Text
 
     /**
      * Reduce function of the third job. Computes the values for A, B, C and D accordingly for each category-token
-     * combination and sorts them in descending order taking only the highest 150 values.
+     * combination, calculates chi squared values and sorts them in descending order taking only the highest 150 values.
      * Emits:   category, token_1:chi_squared_1 ... token_n:chi_squared_n
      *
      * @param key     the key of the key-value pair: category

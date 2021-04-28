@@ -19,8 +19,8 @@ public class DocumentTokenReducer extends Reducer<Text, TextIntWritable, Text, T
 
     /**
      * Reduce function of the third job. Aggregates all necessary values and adds the number of documents per category
-     * as well as the total number of documents.
-     * Emits:   (category,token),  #docsPerTokenAndCategory,#docsPerToken,#docsPerCategory,#docsTotal
+     * as well as the total number of documents. Reduces by token.
+     * Emits:   (category,token),  (#docsWithTokenAndCategory,#docsPerToken,#docsPerCategory,#docsTotal)
      *
      * @param key       the key of the key-value pair: token
      * @param values    the value of the key-value pair: iterable of TextIntWritable objects for one token
